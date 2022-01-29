@@ -4,13 +4,13 @@ services:
   pushgateway:
     image: prom/pushgateway:latest
     ports:
-      - 9091:9091
+      - 9092:9091
 
   prometheus:
     image: prom/prometheus:latest
     command: --config.file=/etc/prometheus/prometheus.yml
     ports:
-      - 9090:9090
+      - 9089:9090
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus/alerts/:/etc/prometheus/rules.d/
