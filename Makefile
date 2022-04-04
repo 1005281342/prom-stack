@@ -15,7 +15,7 @@ up:
 	@echo
 
 reload-prom:
-	curl -X POST http://localhost:9090/-/reload
+	curl -X POST http://localhost:9089/-/reload
 
 stop:
 	docker-compose down

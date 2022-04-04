@@ -1,0 +1,40 @@
+
+groups:
+  - name: httproxy
+    rules:
+    - alert: go协程数
+      expr: (go_goroutines{exported_job="httproxy", instance="pushgateway:9091", job="prom-stack"}) > 16
+      for: 15s
+      labels:
+        severity: warning
+        nodename: "{{ $labels.app }}"
+      annotations:
+        summary: "{{ $labels.app }}go协程数过多"
+        description: "{{ $labels.app }}go协程数已超32"
+    - alert: 主机内存使用率过高
+      expr: (1 - (node_memory_MemAvailable_bytes / (node_memory_MemTotal_bytes))) * 100 > 10
+      for: 10s # 告警持续时间，超过这个时间才会发送给alertmanager
+      labels:
+        severity: warning
+        nodename: "{{ $labels.app }}"
+      annotations:
+        summary: "服务器实例 {{ $labels.app }}内存使用率过高"
+        description: "{{ $labels.app }}的内存使用率超过10%，当前使用率[{{ $value }}]."
+    - alert: 主机cpu使用率过高
+      expr: 100-avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by(instance)*100 > 10
+      for: 1m
+      labels:
+        severity: warning
+        nodename: "{{ $labels.app }}"
+      annotations:
+        summary: "服务器实例 {{ $labels.app }} cpu使用率过高"
+        description: "{{ $labels.app }}的cpu使用率超过10%,当前使用率[{{ $value }}]."
+    - alert: 主机磁盘使用率过高
+      expr: 100 - node_filesystem_avail_bytes{fstype=~"ext4|xfs",mountpoint="/"}  * 100 / node_filesystem_size_bytes{fstype=~"ext4|xfs",mountpoint="/"} > 10
+      for: 1m
+      labels:
+        severity: warning
+        nodename: "{{ $labels.app }}"
+      annotations:
+        summary: "服务器实例 {{ $labels.app }} 磁盘使用率过高"
+        description: "{{ $labels.app }}的disk使用率超过10%,当前使用率[{{ $value }}]."

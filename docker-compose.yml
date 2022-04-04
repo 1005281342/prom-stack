@@ -8,11 +8,12 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    command: --config.file=/etc/prometheus/prometheus.yml
+    command: --web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yml
     ports:
       - 9089:9090
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/httproxy.yml:/etc/prometheus/httproxy.yml
       - ./prometheus/alerts/:/etc/prometheus/rules.d/
 
   grafana:
@@ -21,6 +22,9 @@ services:
       - 3000:3000
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=password
+    command: --config /usr/grafana/conf/custom.ini
+    volumes:
+      - ./grafana/conf/custom.ini:/usr/grafana/conf/custom.ini
 
   alertmanager:
     image: prom/alertmanager:latest
